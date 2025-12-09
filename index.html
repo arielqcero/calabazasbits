@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calabazas Bits</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <h1 class="title">Calabazas Bits</h1>
+    <div class="subtitle">Hudson, Buenos Aires, Argentina</div>
+    <div class="time-grid">
+      <div class="card">
+        <div class="card-title">Hora local</div>
+        <div id="time-local" class="clock">--:--:--</div>
+        <div id="date-local" class="date">----</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Hora UTC</div>
+        <div id="time-utc" class="clock">--:--:--</div>
+        <div id="date-utc" class="date">----</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <h2>Clima actual y pronóstico</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">Actual</div>
+          <div class="kv"><span class="k">Temperatura:</span><span id="temp">-- °C</span></div>
+          <div class="kv"><span class="k">Humedad:</span><span id="humidity">-- %</span></div>
+          <div class="kv"><span class="k">Presión:</span><span id="pressure">-- hPa</span></div>
+          <div class="kv"><span class="k">Viento:</span><span id="wind">-- km/h</span></div>
+          <div class="kv"><span class="k">Ráfagas:</span><span id="gusts">-- km/h</span></div>
+          <div class="kv"><span class="k">Dirección:</span><span id="wind-dir">--</span></div>
+          <div class="kv"><span class="k">Pronóstico:</span><span id="forecast-now">--</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Mañana</div>
+          <div class="kv"><span class="k">Mín/Máx:</span><span id="minmax">-- / -- °C</span></div>
+          <div class="kv"><span class="k">Viento máx:</span><span id="wind-max-tomorrow">-- km/h</span></div>
+          <div class="kv"><span class="k">Ráfaga máx:</span><span id="gusts-max-tomorrow">-- km/h</span></div>
+          <div class="kv"><span class="k">Pronóstico:</span><span id="forecast-tomorrow">--</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Condiciones solares y aperturas de bandas</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">Índices</div>
+          <div class="kv"><span class="k">SFI:</span><span id="sfi">--</span></div>
+          <div class="kv"><span class="k">Kp:</span><span id="kp">--</span></div>
+          <div class="kv"><span class="k">A:</span><span id="a-index">--</span></div>
+          <div class="kv"><span class="k">MUF estimada:</span><span id="muf">-- MHz</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Bandas</div>
+          <ul class="bands" id="bands-list">
+            <li>HF baja (160/80 m): --</li>
+            <li>HF media (40/30 m): --</li>
+            <li>HF alta (20/17/15 m): --</li>
+            <li>10 m: --</li>
+            <li>6 m: --</li>
+          </ul>
+          <div class="kv"><span class="k">Ventanas:</span><span id="windows">--</span></div>
+        </div>
+      </div>
+    </section>
+    <section>
+    <section>
+    <h2>Interpretación de índices</h2>
+        <ul>
+            <li><strong>SFI:</strong> mide la actividad solar. <em>&lt;80 = bandas altas cerradas, &gt;160 = 10 m abierto gran parte del día.</em></li>
+            <li><strong>Kp:</strong> mide perturbaciones geomagnéticas. <em>0–2 = estable, 5+ = tormenta geomagnética.</em></li>
+            <li><strong>A:</strong> promedio del Kp en 24 h. <em>0–10 = estable, &gt;30 = propagación degradada.</em></li>
+        </ul>
+    </section>
+  </main>
+
+    <footer class="footer">
+    <div>POC local — © Ariel — Calabazas Bits</div>
+    <div class="note">Fuentes: Open‑Meteo, NOAA SWPC, HamQSL (N0NBH)</div>
+    </footer>
+
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
