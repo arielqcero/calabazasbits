@@ -9,7 +9,7 @@
 <body>
   <header class="header">
     <h1 class="title">Calabazas Bits</h1>
-    <div class="subtitle">Hudson, Buenos Aires, Argentina</div>
+    <div class="subtitle">Datos referenciales a Argentina</div>
     <div class="time-grid">
       <div class="card">
         <div class="card-title">Hora local</div>
@@ -24,29 +24,107 @@
     </div>
   </header>
 
-  <main class="container">
-    <section>
-      <h2>Clima actual y pronóstico</h2>
-      <div class="grid">
-        <div class="card">
-          <div class="card-title">Actual</div>
-          <div class="kv"><span class="k">Temperatura:</span><span id="temp">-- °C</span></div>
-          <div class="kv"><span class="k">Humedad:</span><span id="humidity">-- %</span></div>
-          <div class="kv"><span class="k">Presión:</span><span id="pressure">-- hPa</span></div>
-          <div class="kv"><span class="k">Viento:</span><span id="wind">-- km/h</span></div>
-          <div class="kv"><span class="k">Ráfagas:</span><span id="gusts">-- km/h</span></div>
-          <div class="kv"><span class="k">Dirección:</span><span id="wind-dir">--</span></div>
-          <div class="kv"><span class="k">Pronóstico:</span><span id="forecast-now">--</span></div>
-        </div>
-        <div class="card">
-          <div class="card-title">Mañana</div>
-          <div class="kv"><span class="k">Mín/Máx:</span><span id="minmax">-- / -- °C</span></div>
-          <div class="kv"><span class="k">Viento máx:</span><span id="wind-max-tomorrow">-- km/h</span></div>
-          <div class="kv"><span class="k">Ráfaga máx:</span><span id="gusts-max-tomorrow">-- km/h</span></div>
-          <div class="kv"><span class="k">Pronóstico:</span><span id="forecast-tomorrow">--</span></div>
-        </div>
-      </div>
-    </section>
+<section class="card refs-card">
+  <h2>Buscar ciudad en Argentina</h2>
+  <input type="text" id="cityInput" placeholder="Escribe el nombre de la ciudad..." />
+  <button onclick="searchCity()">Buscar</button>
+  <ul id="results" class="refs-list"></ul>
+</section>
+
+<section class="card refs-card" id="weatherSection">
+  <h2>Clima actual y pronóstico</h2>
+  <div id="weather"></div>
+</section>
+
+<script>
+// Función para convertir grados en punto cardinal
+function gradosAPuntoCardinal(grados) {
+  const direcciones = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+                       "S", "SSO", "SO", "OSO", "O", "ONO", "NO", "NNO"];
+  const idx = Math.round(grados / 22.5) % 16;
+  return direcciones[idx];
+}
+
+function searchCity() {
+  const city = document.getElementById("cityInput").value;
+  const url = `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(city)}&country=Argentina&format=json`;
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      const resultsList = document.getElementById("results");
+      resultsList.innerHTML = "";
+
+      if (data.length === 0) {
+        resultsList.innerHTML = "<li>No se encontraron coincidencias</li>";
+        return;
+      }
+
+      data.forEach(place => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${place.display_name}</strong>`;
+        li.onclick = () => {
+          resultsList.innerHTML = ""; // limpiar resultados
+          getWeather(place.lat, place.lon, place.display_name);
+        };
+        resultsList.appendChild(li);
+      });
+    })
+    .catch(err => console.error(err));
+}
+
+function getWeather(lat, lon, name) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relativehumidity_2m,surface_pressure,windgusts_10m&daily=temperature_2m_max,temperature_2m_min,windspeed_10m_max,windgusts_10m_max,weathercode&timezone=auto`;
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      const weatherDiv = document.getElementById("weather");
+      const current = data.current_weather;
+      const hourly = data.hourly;
+      const daily = data.daily;
+
+      // Tomamos humedad y presión de la primera hora disponible
+      const humedad = hourly.relativehumidity_2m[0];
+      const presion = hourly.surface_pressure[0];
+      const rafagas = hourly.windgusts_10m[0];
+
+      // Interpretación del código de clima
+      const weatherCodes = {
+        0: "Despejado",
+        1: "Mayormente despejado",
+        2: "Parcialmente nublado",
+        3: "Nublado",
+        61: "Chubascos ligeros",
+        63: "Chubascos moderados",
+        65: "Chubascos intensos"
+      };
+      const todayForecast = weatherCodes[daily.weathercode[0]] || "Condición desconocida";
+      const tomorrowForecast = weatherCodes[daily.weathercode[1]] || "Condición desconocida";
+
+      const direccion = gradosAPuntoCardinal(current.winddirection);
+
+      weatherDiv.innerHTML = `
+        <h3>${name}</h3>
+        <h4 class="card-title">Actual</h4>
+        <p>Temperatura: ${current.temperature} °C</p>
+        <p>Humedad: ${humedad} %</p>
+        <p>Presión: ${presion} hPa</p>
+        <p>Viento: ${current.windspeed} km/h</p>
+        <p>Ráfagas: ${rafagas} km/h</p>
+        <p>Dirección: ${direccion} (${current.winddirection}°)</p>
+        <p>Pronóstico: ${todayForecast}</p>
+
+        <h4 class="card-title">Mañana</h4>
+        <p>Mín/Máx: ${daily.temperature_2m_min[1]} / ${daily.temperature_2m_max[1]} °C</p>
+        <p>Viento máx: ${daily.windspeed_10m_max[1]} km/h</p>
+        <p>Ráfaga máx: ${daily.windgusts_10m_max[1]} km/h</p>
+        <p>Pronóstico: ${tomorrowForecast}</p>
+      `;
+    })
+    .catch(err => console.error(err));
+}
+</script>
 
     <section>
       <h2>Condiciones solares y aperturas de bandas</h2>
@@ -172,7 +250,7 @@
   </main>
 
     <footer class="footer">
-    <div>POC local — © Ariel LU8EIB — Calabazas Bits</div>
+    <div>POC local — 2025 © Ariel LU8EIB — Calabazas Bits</div>
     <div class="note">Fuentes: Open‑Meteo, NOAA SWPC, HamQSL (N0NBH)</div>
     </footer>
 

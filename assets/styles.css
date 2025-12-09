@@ -31,3 +31,30 @@ h2 { color: var(--accent); font-size: 20px; margin: 12px 0 16px; }
 .bands { list-style: none; padding: 0; margin: 0; }
 .bands li { padding: 6px 0; border-bottom: 1px dashed #233042; }
 .footer { padding: 24px; text-align: center; color: var(--muted); border-top: 1px solid #1f2937; }
+
+/* Estilos sugeridos para la sección de referencias */
+.refs-card {
+  padding: 1rem;
+}
+
+.refs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+
+.refs-list li {
+  background: #0f172a10; /* sutil */
+  border: 1px solid #0f172a20;
+  border-radius: 8px;
+  padding: 0.75rem;
+  line-height: 1.35;
+}
+
+.refs-list li strong {
+  display: inline-block;
+  min-width: 9.5rem;
+}
