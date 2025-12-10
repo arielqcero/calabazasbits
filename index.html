@@ -64,7 +64,15 @@ function searchCity() {
         const li = document.createElement("li");
         li.innerHTML = `<strong>${place.display_name}</strong>`;
         li.onclick = () => {
-          resultsList.innerHTML = ""; // limpiar resultados
+          // Guardar ciudad en localStorage
+          localStorage.setItem("ciudadSeleccionada", place.display_name);
+          localStorage.setItem("lat", place.lat);
+          localStorage.setItem("lon", place.lon);
+
+          // Limpiar resultados
+          resultsList.innerHTML = "";
+
+          // Actualizar clima
           getWeather(place.lat, place.lon, place.display_name);
         };
         resultsList.appendChild(li);
@@ -84,12 +92,10 @@ function getWeather(lat, lon, name) {
       const hourly = data.hourly;
       const daily = data.daily;
 
-      // Tomamos humedad y presión de la primera hora disponible
       const humedad = hourly.relativehumidity_2m[0];
       const presion = hourly.surface_pressure[0];
       const rafagas = hourly.windgusts_10m[0];
 
-      // Interpretación del código de clima
       const weatherCodes = {
         0: "Despejado",
         1: "Mayormente despejado",
@@ -124,6 +130,17 @@ function getWeather(lat, lon, name) {
     })
     .catch(err => console.error(err));
 }
+
+// Al cargar la página, recuperar ciudad guardada
+window.onload = () => {
+  const ciudad = localStorage.getItem("ciudadSeleccionada");
+  const lat = localStorage.getItem("lat");
+  const lon = localStorage.getItem("lon");
+
+  if (ciudad && lat && lon) {
+    getWeather(lat, lon, ciudad);
+  }
+};
 </script>
 
     <section>
